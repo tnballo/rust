@@ -97,17 +97,30 @@ impl<BorrowType: marker::BorrowType, K, V> NodeRef<BorrowType, K, V, marker::Lea
         K: Borrow<Q>,
         R: RangeBounds<Q>,
     {
+        // A set's value is the unit type, ().
+        // `core::any::TypeId::of::<()>() == core::any::TypeId::of::<V>()` requires `V: 'static`.
+        // This workaround takes advantage of `()` being a zero-sized type.
+        let is_set = core::mem::size_of::<()>() == core::mem::size_of::<V>();
+
         // Inlining these variables should be avoided. We assume the bounds reported by `range`
         // remain the same, but an adversarial implementation could change between calls (#81138).
         let (start, end) = (range.start_bound(), range.end_bound());
         match (start, end) {
             (Bound::Excluded(s), Bound::Excluded(e)) if s == e => {
-                panic!("range start and end are equal and excluded in BTreeMap")
+                if is_set {
+                    panic!("range start and end are equal and excluded in BTreeSet")
+                } else {
+                    panic!("range start and end are equal and excluded in BTreeMap")
+                }
             }
             (Bound::Included(s) | Bound::Excluded(s), Bound::Included(e) | Bound::Excluded(e))
                 if s > e =>
             {
-                panic!("range start is greater than range end in BTreeMap")
+                if is_set {
+                    panic!("range start is greater than range end in BTreeSet")
+                } else {
+                    panic!("range start is greater than range end in BTreeMap")
+                }
             }
             _ => {}
         }
