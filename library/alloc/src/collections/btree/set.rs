@@ -273,6 +273,11 @@ impl<T> BTreeSet<T> {
     /// `range((Excluded(4), Included(10)))` will yield a left-exclusive, right-inclusive
     /// range from 4 to 10.
     ///
+    /// # Panics
+    ///
+    /// Panics if range `start > end`.
+    /// Panics if range `start == end` and both bounds are `Excluded`.
+    ///
     /// # Examples
     ///
     /// ```
