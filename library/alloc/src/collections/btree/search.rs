@@ -97,10 +97,9 @@ impl<BorrowType: marker::BorrowType, K, V> NodeRef<BorrowType, K, V, marker::Lea
         K: Borrow<Q>,
         R: RangeBounds<Q>,
     {
-        // A set's value is the unit type, ().
-        // `core::any::TypeId::of::<()>() == core::any::TypeId::of::<V>()` requires `V: 'static`.
-        // This workaround takes advantage of `()` being a zero-sized type.
-        let is_set = core::mem::size_of::<()>() == core::mem::size_of::<V>();
+        // PROBLEM: `self.node` is private. Even if zero-index is valid, cannot access instance of value.
+        use super::set_val::IsSetVal;
+        let is_set = self.node.vals[0].is_set_val();
 
         // Inlining these variables should be avoided. We assume the bounds reported by `range`
         // remain the same, but an adversarial implementation could change between calls (#81138).
