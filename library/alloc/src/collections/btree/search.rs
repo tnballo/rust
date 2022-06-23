@@ -97,9 +97,8 @@ impl<BorrowType: marker::BorrowType, K, V> NodeRef<BorrowType, K, V, marker::Lea
         K: Borrow<Q>,
         R: RangeBounds<Q>,
     {
-        // PROBLEM: `self.node` is private. Even if zero-index is valid, cannot access instance of value.
-        use super::set_val::IsSetVal;
-        let is_set = self.node.vals[0].is_set_val();
+        // Determine if map or set is being searched
+        let is_set = <V as super::set_val::IsSetVal>::is_set_val();
 
         // Inlining these variables should be avoided. We assume the bounds reported by `range`
         // remain the same, but an adversarial implementation could change between calls (#81138).

@@ -9,8 +9,8 @@ mod navigate;
 mod node;
 mod remove;
 mod search;
-mod set_val;
 pub mod set;
+mod set_val;
 mod split;
 
 #[doc(hidden)]
